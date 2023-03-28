@@ -7,6 +7,8 @@ let draggable = current.dataset.draggable || 'true';
 
 let maximizeWindow = current.dataset.maximizeWindow || 'true';
 
+const style = current.dataset.style || 'right-model1';
+
 const buttonChatColor = '#00a089';
 const buttonChatWidth = '60px';
 const buttonChatHeight = '60px';
@@ -52,6 +54,31 @@ const maximizeChatButtonImg = document.createElement('img');
 const minimizeChatButtonImg = document.createElement('img');
 const closeChatButton = document.createElement('button');
 const closeButtonImg = document.createElement('img');
+const notify = document.createElement('img');
+    
+
+function selectedStyle () {
+    if (style === 'right-model1') {
+        openChatButton.style.right = '38px';
+        boxDiv.style.right = '38px';
+        boxDiv.style.bottom = '120px';
+    }
+    if (style === 'left-model1') {
+        openChatButton.style.left = '38px';
+        boxDiv.style.left = '38px';
+        boxDiv.style.bottom = '120px';
+    }
+    if (style === 'right-model2') {
+        openChatButton.style.right = '38px';
+        boxDiv.style.right = '38px';
+        boxDiv.style.bottom = '0px';
+    }
+    if (style === 'left-model2') {
+        openChatButton.style.left = '38px';
+        boxDiv.style.left = '38px';
+        boxDiv.style.bottom = '0px';
+    }
+}
 
 function start() {
     document.body.appendChild(openChatButton);
@@ -64,7 +91,6 @@ function start() {
     openChatButtonImg.style.padding = '0';
     openChatButton.style.position = 'fixed';
     openChatButton.style.bottom = '25px';
-    openChatButton.style.right = '32px';
     openChatButton.style.width = buttonChatWidth;
     openChatButton.style.height = buttonChatHeight;
     openChatButton.style.border = buttonChatBorder;
@@ -80,14 +106,13 @@ function start() {
     boxDiv.style.width = embbedWidth;
     boxDiv.style.height = embbedHeight;
     boxDiv.style.position = 'fixed';
-    boxDiv.style.bottom = '120px';
-    boxDiv.style.right = '38px';
     boxDiv.style.margin = '0';
     boxDiv.style.padding = '0';
     boxDiv.style.boxShadow = '0 -1px 12px 0 rgba(0, 0, 0, 0.2)';
     boxDiv.style.borderRadius = embbedBorderRadius;
     boxDiv.appendChild(topBarDiv);
     boxDiv.appendChild(iframe);
+    selectedStyle();
 
     topBarDiv.appendChild(topBarDivImg);
     topBarDiv.style.cursor = 'default';
@@ -187,14 +212,20 @@ function start() {
 
     eventer(messageEvent, function (e) {
 
-        if (e.data === 'id' || e.message === 'id')
-            console.log(e);
-        let wid = e.data;
-        sessionStorage.setItem('wid', wid);
-    });
-
+        if (e.data === 'notify') {
+            setNotify();
+            return;
+        }
+        if (e.data === 'ended') {
+            sessionStorage.removeItem('wid');
+            return;
+        }
+            let wid = e.data;
+            sessionStorage.setItem('wid', wid);                
+        });
 }
 
+//functions
 
 function replyStatus() {
     windowStatus = sessionStorage.getItem('windowStatus');
@@ -208,8 +239,10 @@ function replyStatus() {
     }
 }
 
+function setNotify () {
+    console.log('criar notificçao de nova mensagem')
+}
 
-//functions
 changeScreenModeButton.onclick = function () {
     maximizeApp();
 }
@@ -258,8 +291,7 @@ function maximizeApp() {
         boxDiv.style.height = embbedHeight;
         boxDiv.style.removeProperty('inset');
         boxDiv.style.position = 'fixed';
-        boxDiv.style.bottom = '120px';
-        boxDiv.style.right = '38px';
+        selectedStyle();
         iframe.setAttribute('width', '400px');
         iframe.setAttribute('height', '420px');
         topBarDiv.style.borderTopLeftRadius = embbedBorderRadius;
@@ -341,14 +373,17 @@ function draggableTrue() {
 
 
 
+
 window.addEventListener('load', start);
 
-    //configuraçao de posicionar esquerda/direita botao e chat
-    //fazer que se mantenha ativo quando é trocado de tela
+    //verificar se a conversa acabou, se tiver acabada, enviar um evento por 
+    //postmessage do template para o embbed para limpar a sessionStorage
+    
     //verificar se o objeto for maior que o viewport movimentar é falso
     //fazer uma animção ao abrir (opcional em datas)
     //arrumar os icones
     //fazer estilos de comportamento na tela
+    //notificação de nova mensagem
 
 
 
