@@ -31,16 +31,15 @@ const topBarLogoMarginLeft = '16px';
 
 const maximizeButtonIcon = 'https://www.svgrepo.com/show/5867/maximize.svg';
 const minimizeButtonIcon = 'https://cdn-icons-png.flaticon.com/512/786/786263.png'
-
 const closeButtonIcon = 'https://xgentest6-desenv.xgen.com.br/desenv6/templatev2TokioMarine/embbed/embbed-icons/close-icon.png';
-const closeButtonHover = '#37b9a5';
-const closeBorderRadius = '50%';
+
+const topBarButtonsHover = '#37b9a5';
+const topBarButtonsBorderRadius = '50%';
 //
 
 
 let url = current.dataset.link
 let route = '#newChatSession/'
-
 let chatRoute = '#chat/'
 const connectRoute = url + route + calltype;
 const boxDiv = document.createElement('div');
@@ -53,11 +52,10 @@ const buttonsContainer = document.createElement('div');
 const changeScreenModeButton = document.createElement('button');
 const maximizeChatButtonImg = document.createElement('img');
 const minimizeChatButtonImg = document.createElement('img');
+const onRefreshChatButtonImg = document.createElement('img');
 const closeChatButton = document.createElement('button');
 const closeButtonImg = document.createElement('img');
 const notifyFlag = document.createElement('span');
-const notifyFlagCount = document.createElement('h6');
-
 
 function selectedStyle () {
     if (style === 'right-model1') {
@@ -86,6 +84,7 @@ function start() {
     document.body.appendChild(openChatButton);
     openChatButton.appendChild(openChatButtonImg);
     openChatButton.appendChild(notifyFlag);
+
     notifyFlag.style.backgroundColor = notifyFlagColor;
     notifyFlag.style.width = '16px';
     notifyFlag.style.height = '16px';
@@ -93,6 +92,7 @@ function start() {
     notifyFlag.style.position = 'fixed';
     notifyFlag.style.right = '38px'
     notifyFlag.hidden = true;
+
     openChatButtonImg.setAttribute('src', buttonChatIcon);
     openChatButtonImg.setAttribute('alt', 'chat-icon.png');
     openChatButtonImg.style.height = '100%';
@@ -146,8 +146,8 @@ function start() {
     buttonsContainer.style.display = 'flex';
     buttonsContainer.style.alignItems = 'center';
     buttonsContainer.style.justifyContent = 'space-between';
-
-    changeScreenModeButton.appendChild(maximizeChatButtonImg);
+        
+        changeScreenModeButton.appendChild(maximizeChatButtonImg);
     changeScreenModeButton.appendChild(minimizeChatButtonImg);
     changeScreenModeButton.style.display = 'flex';
     changeScreenModeButton.style.justifyContent = 'center';
@@ -157,10 +157,10 @@ function start() {
     changeScreenModeButton.style.padding = '0';
     changeScreenModeButton.style.width = '30px';
     changeScreenModeButton.style.height = '30px';
-    changeScreenModeButton.style.borderRadius = closeBorderRadius;
+    changeScreenModeButton.style.borderRadius = topBarButtonsBorderRadius;
     changeScreenModeButton.style.cursor = 'pointer';
     changeScreenModeButton.addEventListener('mouseenter', () =>
-        changeScreenModeButton.style.background = closeButtonHover);
+        changeScreenModeButton.style.background = topBarButtonsHover);
     changeScreenModeButton.addEventListener('mouseleave', () =>
         changeScreenModeButton.style.background = 'transparent');
 
@@ -194,12 +194,12 @@ function start() {
     closeChatButton.style.padding = '0';
     closeChatButton.style.width = '30px';
     closeChatButton.style.height = '30px';
-    closeChatButton.style.borderRadius = closeBorderRadius;
+    closeChatButton.style.borderRadius = topBarButtonsBorderRadius;
     closeChatButton.style.cursor = 'pointer';
     closeChatButton.addEventListener('mouseenter', () =>
-        closeChatButton.style.background = closeButtonHover);
+        closeChatButton.style.background = topBarButtonsHover);
     closeChatButton.addEventListener('mouseleave', () =>
-        closeChatButton.style.background = 'transparent');
+    closeChatButton.style.background = 'transparent');
 
     iframe.setAttribute('id', 'embbed-chat');
     iframe.setAttribute('width', '400px');
@@ -215,9 +215,9 @@ function start() {
     }
 
     localStorage.setItem('firstSession', false);
-    let eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    let eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
     let eventer = window[eventMethod];
-    let messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
+    let messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
 
     eventer(messageEvent, function (e) {
 
@@ -229,12 +229,21 @@ function start() {
             localStorage.removeItem('wid');
             return;
         }
+        if (e.data === 'refresh') {
+            setTimeout(newSession, 5000);
+            return;
+        }
             let wid = e.data;
             localStorage.setItem('wid', wid);                
         });
 }
 
-//functions
+function newSession() {
+    boxDiv.removeChild(iframe);
+    boxDiv.appendChild(iframe);
+    iframe.setAttribute('src', connectRoute);
+    openChat();
+}
 
 function replyStatus() {
     windowStatus = localStorage.getItem('windowStatus');
@@ -245,11 +254,12 @@ function replyStatus() {
     if (id) {
         const currentIframe = url + chatRoute + id;
         iframe.setAttribute('src', currentIframe);
+        return;
     }
+    iframe.setAttribute('src', connectRoute);
 }
 
 let countMessage = 0;
-
 function setNotify() {
     if (localStorage.getItem('windowStatus') === 'closed') {
         notifyFlag.hidden = false;
@@ -325,9 +335,7 @@ function maximizeApp() {
 }
 
 let initalX = 0, initalY = 0;
-
 let moveElement = false;
-
 let events = {
     mouse: {
         down: 'mousedown',
@@ -342,7 +350,6 @@ let events = {
 }
 
 let deviceType = '';
-
 const isTouchDevice = () => {
     try {
         document.createEvent('');
@@ -389,21 +396,62 @@ function draggableTrue() {
         boxDiv.addEventListener(events[deviceType].up, (e) => {
             moveElement = false;
         });
+        window.addEventListener('resize', (e) => {
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const boxDivHeight = boxDiv.offsetHeight;
+            const boxDivWidth = boxDiv.offsetWidth;
+            const boxDivTop = boxDiv.offsetTop;
+            const boxDivLeft = boxDiv.offsetLeft;
+
+            if (boxDivTop + boxDivHeight > viewportHeight) {
+                boxDiv.style.top = (viewportHeight - boxDivHeight) + 'px';
+            }
+            if (boxDivLeft + boxDivWidth > viewportWidth) {
+                boxDiv.style.left = (viewportWidth - boxDivWidth) + 'px';
+            }
+        });
+        boxDiv.addEventListener(events[deviceType].move, (e) => {
+            if (moveElement) {
+              e.preventDefault();
+              let newX = !isTouchDevice() ? e.clientX : e.touches[0].clientX;
+              let newY = !isTouchDevice() ? e.clientY : e.touches[0].clientY;
+        
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
+              const boxWidth = boxDiv.offsetWidth;
+              const boxHeight = boxDiv.offsetHeight;
+        
+              let newLeft = boxDiv.offsetLeft - (initalX - newX);
+              let newTop = boxDiv.offsetTop - (initalY - newY);
+        
+              if (newLeft < 0) {
+                newLeft = 0;
+              } else if (newLeft + boxWidth > viewportWidth) {
+                newLeft = viewportWidth - boxWidth;
+              }
+        
+              if (newTop < 0) {
+                newTop = 0;
+              } else if (newTop + boxHeight > viewportHeight) {
+                newTop = viewportHeight - boxHeight;
+              }
+        
+              boxDiv.style.top = newTop + 'px';
+              boxDiv.style.left = newLeft + 'px';
+        
+              initalX = newX;
+              initalY = newY;
+            }
+        });
     }
 }
 
-
-
-
-
 window.addEventListener('load', start);
 
-    /* verificar se a conversa acabou, se tiver acabada, enviar um evento por 
-    postmessage do template para o embbed para limpar a sessionStorage */
-    
-    //ao receber um link mudar o status da pagina anterior
-    //verificar se o objeto for maior que o viewport movimentar é falso
-    //fazer uma animção ao abrir (opcional em datas)
+
+    //arrumar o reconnect
+    //ao receber um link mudar o status da pagina anterior //parcialmente feito, preciso saber como seria o comportamento
     //arrumar os icones
 
 
