@@ -16,6 +16,7 @@ const buttonChatBorder = 'none';
 const buttonChatBorderRadius = '50%';
 const buttonChatIcon = current.dataset.buttonImage || 'https://xgentest6-desenv.xgen.com.br/desenv6/templatev2TokioMarine/embbed/embbed-icons/chat-icon.png';
 const buttonChatBoxShadow = '0 -1px 12px 0 rgba(0, 0, 0, 0.2)';
+const notifyFlagColor = '#E56146';
 
 const embbedWidth = current.dataset.popupWidth || '400px';
 const embbedHeight = current.dataset.popupHeight || '470px';
@@ -54,8 +55,9 @@ const maximizeChatButtonImg = document.createElement('img');
 const minimizeChatButtonImg = document.createElement('img');
 const closeChatButton = document.createElement('button');
 const closeButtonImg = document.createElement('img');
-const notify = document.createElement('img');
-    
+const notifyFlag = document.createElement('span');
+const notifyFlagCount = document.createElement('h6');
+
 
 function selectedStyle () {
     if (style === 'right-model1') {
@@ -83,6 +85,14 @@ function selectedStyle () {
 function start() {
     document.body.appendChild(openChatButton);
     openChatButton.appendChild(openChatButtonImg);
+    openChatButton.appendChild(notifyFlag);
+    notifyFlag.style.backgroundColor = notifyFlagColor;
+    notifyFlag.style.width = '16px';
+    notifyFlag.style.height = '16px';
+    notifyFlag.style.borderRadius = '50%';
+    notifyFlag.style.position = 'fixed';
+    notifyFlag.style.right = '38px'
+    notifyFlag.hidden = true;
     openChatButtonImg.setAttribute('src', buttonChatIcon);
     openChatButtonImg.setAttribute('alt', 'chat-icon.png');
     openChatButtonImg.style.height = '100%';
@@ -197,15 +207,14 @@ function start() {
     iframe.setAttribute('frameborder', '0');
     iframe.style.borderBottomRightRadius = embbedBorderRadius;
     iframe.style.borderBottomLeftRadius = embbedBorderRadius;
-    iframe.setAttribute('src', connectRoute);
     draggableTrue();
 
-    sessionStorage.getItem('firstSession');
-    if (sessionStorage.getItem('firstSession') === 'false') {
+    localStorage.getItem('firstSession');
+    if (localStorage.getItem('firstSession') === 'false') {
         replyStatus();
     }
 
-    sessionStorage.setItem('firstSession', false);
+    localStorage.setItem('firstSession', false);
     let eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     let eventer = window[eventMethod];
     let messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
@@ -217,30 +226,36 @@ function start() {
             return;
         }
         if (e.data === 'ended') {
-            sessionStorage.removeItem('wid');
+            localStorage.removeItem('wid');
             return;
         }
             let wid = e.data;
-            sessionStorage.setItem('wid', wid);                
+            localStorage.setItem('wid', wid);                
         });
 }
 
 //functions
 
 function replyStatus() {
-    windowStatus = sessionStorage.getItem('windowStatus');
+    windowStatus = localStorage.getItem('windowStatus');
     if (windowStatus == 'opened') {
         openChat();
     }
-    id = sessionStorage.getItem('wid');
+    id = localStorage.getItem('wid');
     if (id) {
         const currentIframe = url + chatRoute + id;
         iframe.setAttribute('src', currentIframe);
     }
 }
 
-function setNotify () {
-    console.log('criar notificçao de nova mensagem')
+let countMessage = 0;
+
+function setNotify() {
+    if (localStorage.getItem('windowStatus') === 'closed') {
+        notifyFlag.hidden = false;
+        countMessage += 1;
+        notifyFlag.innerHTML = countMessage;
+    }
 }
 
 changeScreenModeButton.onclick = function () {
@@ -249,6 +264,13 @@ changeScreenModeButton.onclick = function () {
 
 openChatButton.onclick = function () {
     openChat();
+    notifyFlag.hidden = true;
+    countMessage = 0;
+    if (localStorage.getItem('firstLoggin')) {
+        return;
+    }
+    iframe.setAttribute('src', connectRoute);
+    localStorage.setItem('firstLoggin', true);
 }
 
 closeChatButton.onclick = function () {
@@ -257,11 +279,11 @@ closeChatButton.onclick = function () {
 
 function openChat() {
     if (boxDiv.hidden == true) {
-        sessionStorage.setItem('windowStatus', 'opened');
+        localStorage.setItem('windowStatus', 'opened');
         boxDiv.hidden = false;
     }
     else {
-        sessionStorage.setItem('windowStatus', 'closed');
+        localStorage.setItem('windowStatus', 'closed');
         boxDiv.hidden = true;
     }
 }
@@ -376,15 +398,13 @@ function draggableTrue() {
 
 window.addEventListener('load', start);
 
-    //verificar se a conversa acabou, se tiver acabada, enviar um evento por 
-    //postmessage do template para o embbed para limpar a sessionStorage
+    /* verificar se a conversa acabou, se tiver acabada, enviar um evento por 
+    postmessage do template para o embbed para limpar a sessionStorage */
     
+    //ao receber um link mudar o status da pagina anterior
     //verificar se o objeto for maior que o viewport movimentar é falso
     //fazer uma animção ao abrir (opcional em datas)
     //arrumar os icones
-    //fazer estilos de comportamento na tela
-    //notificação de nova mensagem
-
 
 
 
