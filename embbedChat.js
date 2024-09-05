@@ -9,13 +9,13 @@ let maximizeWindow = current.dataset.maximizeWindow || 'true';
 
 const style = current.dataset.style || 'right-model1';
 
-const buttonChatColor = '#00a089';
+const buttonChatColor = '#7CCBED';
 const buttonChatWidth = '60px';
 const buttonChatHeight = '60px';
 const buttonChatBorder = 'none';
 const buttonChatBorderRadius = '50%';
-const buttonChatIcon = current.dataset.buttonImage || 'https://xgentest6-desenv.xgen.com.br/desenv6/templatev2TokioMarine/embbed/embbed-icons/chat-icon.png';
-const buttonChatBoxShadow = '0 -1px 12px 0 rgba(0, 0, 0, 0.2)';
+const buttonChatIcon = current.dataset.buttonImage || './icons/DefaultChatBtn.png';
+const buttonChatBoxShadow = '0 -1px 12px 0 rgba(0, 0, 0, 0.2)'; 
 const notifyFlagColor = '#E56146';
 
 const embbedWidth = current.dataset.popupWidth || '400px';
@@ -24,24 +24,25 @@ const embbedBoxShadow = '0 -1px 12px 0 rgba(0, 0, 0, 0.2)';
 const embbedBorderRadius = '8px';
 
 const topBarHeight = '50px';
-const topBarColor = '#00a089';
+const topBarColor = '#7CCBED';
 const topBarLogoImg = current.dataset.logo || '';
 const topBarLogoHeight = '36px';
 const topBarLogoMarginLeft = '16px';
 
-const maximizeButtonIcon = 'https://www.svgrepo.com/show/5867/maximize.svg';
-const minimizeButtonIcon = 'https://cdn-icons-png.flaticon.com/512/786/786263.png'
-const closeButtonIcon = 'https://xgentest6-desenv.xgen.com.br/desenv6/templatev2TokioMarine/embbed/embbed-icons/close-icon.png';
+const maximizeButtonIcon = './icons/DefaultMaximizeBtn.png';
+const minimizeButtonIcon = './icons/DefaultMinimizeBtn.png'
+const closeButtonIcon = './icons/DefaultCloseBtn.png';
 
 const topBarButtonsHover = '#37b9a5';
 const topBarButtonsBorderRadius = '50%';
 //
 
-
 let url = current.dataset.link
 let route = '#newChatSession/'
 let chatRoute = '#chat/'
+
 const connectRoute = url + route + calltype;
+
 const boxDiv = document.createElement('div');
 const iframe = document.createElement('iframe');
 const openChatButton = document.createElement('button');
@@ -95,8 +96,8 @@ function start() {
 
     openChatButtonImg.setAttribute('src', buttonChatIcon);
     openChatButtonImg.setAttribute('alt', 'chat-icon.png');
-    openChatButtonImg.style.height = '100%';
-    openChatButtonImg.style.width = '100%';
+    openChatButtonImg.style.height = '85%';
+    openChatButtonImg.style.width = '85%';
     openChatButtonImg.style.margin = '0';
     openChatButtonImg.style.padding = '0';
     openChatButton.style.position = 'fixed';
@@ -448,11 +449,6 @@ function draggableTrue() {
 }
 
 window.addEventListener('load', start);
-
-
-    //arrumar o reconnect
-    //ao receber um link mudar o status da pagina anterior //parcialmente feito, preciso saber como seria o comportamento
-    //arrumar os icones
 
 
 
